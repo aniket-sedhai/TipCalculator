@@ -1,11 +1,15 @@
 package com.example.tipcalculator;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -24,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements TextWatcher, View
     private NumberFormat percentFormat;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements TextWatcher, View
         percentage_seek_bar = findViewById(R.id.percentSeekBar);
         percentage_seek_bar.setOnSeekBarChangeListener((SeekBar.OnSeekBarChangeListener) this);
 
-        currencyFormat = NumberFormat.getCurrencyInstance(Locale.GERMAN);
+        currencyFormat = NumberFormat.getCurrencyInstance(Locale.US);
         percentFormat = NumberFormat.getPercentInstance();
 
         percent_view = findViewById(R.id.percentTextView);
@@ -74,8 +79,8 @@ public class MainActivity extends AppCompatActivity implements TextWatcher, View
             double current_percentage = percentage_seek_bar.getProgress();
             double tip = (current_percentage/100)*amount_entered;
 
-            tip_view.setText(String.valueOf(tip));
-            total_view.setText(String.valueOf(tip + amount_entered));
+            tip_view.setText(currencyFormat.format(tip));
+            total_view.setText(currencyFormat.format(tip + amount_entered));
         }
 
         @Override
@@ -114,6 +119,16 @@ public class MainActivity extends AppCompatActivity implements TextWatcher, View
         double val = progress/100.0;
 
         percent_view.setText(percentFormat.format(val));
+        double amount_entered = Double.parseDouble(String.valueOf(amount_edit.getText()));
+
+
+        amount_text_view.setText((currencyFormat.format(amount_entered)));
+
+        double tip = val*amount_entered;
+
+        tip_view.setText(currencyFormat.format(tip));
+        double total = tip + amount_entered;
+        total_view.setText(currencyFormat.format(total));
 
     }
 
@@ -125,5 +140,10 @@ public class MainActivity extends AppCompatActivity implements TextWatcher, View
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
 
+    }
+
+    public void hideSoftKeyboard(View view){
+        InputMethodManager imm =(InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

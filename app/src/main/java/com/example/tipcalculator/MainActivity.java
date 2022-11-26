@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements TextWatcher, View
     private void init()
     {
         amount_edit = findViewById(R.id.amountEditText);
-        amount_edit.addTextChangedListener(textWatcher);
+        amount_edit.addTextChangedListener(this);
         amount_text_view = findViewById(R.id.amountTextView);
 
         percentage_seek_bar = findViewById(R.id.percentSeekBar);
@@ -58,51 +58,38 @@ public class MainActivity extends AppCompatActivity implements TextWatcher, View
 
     }
 
-
-    TextWatcher textWatcher = new TextWatcher() {
-
-        @Override
-
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-        }
-
-        @Override
-
-        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            double amount_entered = Double.parseDouble(String.valueOf(amount_edit.getText()));
-
-
-            amount_text_view.setText((currencyFormat.format(amount_entered)));
-
-            double current_percentage = percentage_seek_bar.getProgress();
-            double tip = (current_percentage/100)*amount_entered;
-
-            tip_view.setText(currencyFormat.format(tip));
-            total_view.setText(currencyFormat.format(tip + amount_entered));
-        }
-
-        @Override
-
-        public void afterTextChanged(Editable editable) {
-
-        }
-
-    };
-
     // Text change listener
     @Override
+
     public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
     }
 
     @Override
-    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
+    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        double amount_entered = 0;
+        try {
+            amount_entered = Double.parseDouble(String.valueOf(amount_edit.getText()));
+
+        }
+        catch (Exception e)
+        {
+            amount_entered = 0;
+        }
+
+        amount_entered = amount_entered/100;
+
+        amount_text_view.setText((currencyFormat.format(amount_entered)));
+        double current_percentage = percentage_seek_bar.getProgress();
+        double tip = (current_percentage/100)*amount_entered;
+
+        tip_view.setText(currencyFormat.format(tip));
+        total_view.setText(currencyFormat.format(tip + amount_entered));
     }
 
     @Override
+
     public void afterTextChanged(Editable editable) {
 
     }
@@ -121,9 +108,6 @@ public class MainActivity extends AppCompatActivity implements TextWatcher, View
         percent_view.setText(percentFormat.format(val));
         double amount_entered = Double.parseDouble(String.valueOf(amount_edit.getText()));
 
-
-        amount_text_view.setText((currencyFormat.format(amount_entered)));
-
         double tip = val*amount_entered;
 
         tip_view.setText(currencyFormat.format(tip));
@@ -134,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements TextWatcher, View
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
-
+        hideSoftKeyboard(amount_text_view);
     }
 
     @Override
